@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">StudentMan</string>
+    <string name="add_new">Add new</string>
+    <string name="studentname">StudentName</string>
+    <string name="studentid">StudentId</string>
+    <string name="student_information">Student Information</string>
+    <string name="student_new_name">Student Name</string>
+    <string name="student_id">Student ID</string>
+    <string name="update">Update</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">delete</string>
+    <string name="edit">edit</string>
 </resources>

@@ -2,10 +2,8 @@ package vn.edu.hust.studentman
 
 import android.os.Bundle
 import android.widget.Button
-import androidx.activity.enableEdgeToEdge
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -37,11 +35,20 @@ class MainActivity : AppCompatActivity() {
       StudentModel("Lê Văn Vũ", "SV020")
     )
 
-    val studentAdapter = StudentAdapter(students)
+    val studentAdapter = StudentAdapter(students, this)
 
     findViewById<RecyclerView>(R.id.recycler_view_students).run {
       adapter = studentAdapter
       layoutManager = LinearLayoutManager(this@MainActivity)
+    }
+
+    findViewById<Button>(R.id.btn_add_new).setOnClickListener {
+      CustomDialog(this).showCustomDialog { dialog ->
+        val name = dialog.findViewById<EditText>(R.id.edit_student_name).text.toString()
+        val id = dialog.findViewById<EditText>(R.id.edit_student_id).text.toString()
+        students.add(StudentModel(name, id))
+        studentAdapter.notifyItemInserted(students.size - 1)
+      }
     }
   }
 }
