@@ -20,7 +20,7 @@ class StudentAdapter(
 
     init {
       itemView.setOnLongClickListener {
-        selectedPos = adapterPosition
+        selectedPos = bindingAdapterPosition
         false
       }
     }
