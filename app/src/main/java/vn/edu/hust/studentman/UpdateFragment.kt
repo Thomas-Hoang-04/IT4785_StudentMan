@@ -1,12 +1,15 @@
 package vn.edu.hust.studentman
 
+import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
@@ -35,6 +38,18 @@ class UpdateFragment : Fragment() {
         return inflater.inflate(R.layout.update_student, container, false)
     }
 
+    private fun handleException(e: Exception) {
+        Log.d("UpdateFragment", e.message ?: "An error occurred")
+        val message = e.message.let {
+            if (it?.contains("UNIQUE constraint failed") == true) {
+                "Student ID already exists"
+            } else {
+                it
+            }
+        } ?: "An error occurred"
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -56,12 +71,25 @@ class UpdateFragment : Fragment() {
             val newName = view.findViewById<EditText>(R.id.edit_student_name).text.toString()
             val newID = view.findViewById<EditText>(R.id.edit_student_id).text.toString()
             if (state == "add") {
+                try {
+                    Students.insertStudent(newName, newID)
+                } catch (e: SQLiteConstraintException) {
+                    handleException(e)
+                    return@setOnClickListener
+                }
                 Students.list.add(StudentModel(newName, newID))
                 studentAdapter.notifyItemInserted(Students.list.size - 1)
             } else if (state == "update") {
                 if (pos != RecyclerView.NO_POSITION) {
-                  Students.list[pos] = StudentModel(newName, newID)
-                  studentAdapter.notifyItemChanged(pos)
+                    val newStudent = StudentModel(newName, newID)
+                    try {
+                        Students.updateStudent(newStudent, id)
+                    } catch (e: SQLiteConstraintException) {
+                        handleException(e)
+                        return@setOnClickListener
+                    }
+                    Students.list[pos] = newStudent
+                    studentAdapter.notifyItemChanged(pos)
                 }
             }
             findNavController().popBackStack()

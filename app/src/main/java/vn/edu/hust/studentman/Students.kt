@@ -1,7 +1,11 @@
 package vn.edu.hust.studentman
 
+import android.database.sqlite.SQLiteDatabase
+
 object Students {
-    val list: MutableList<StudentModel> = mutableListOf(
+    lateinit var db: SQLiteDatabase
+
+    val ref_list = listOf(
         StudentModel("Nguyễn Văn An", "SV001"),
         StudentModel("Trần Thị Bảo", "SV002"),
         StudentModel("Lê Hoàng Cường", "SV003"),
@@ -24,5 +28,19 @@ object Students {
         StudentModel("Lê Văn Vũ", "SV020")
     )
 
+    val list: MutableList<StudentModel> = mutableListOf()
+
     val adapter = StudentAdapter(list)
+
+    fun deleteStudent(id: String) {
+        db.delete("students", "student_id = ?", arrayOf(id))
+    }
+
+    fun insertStudent(name: String, id: String) {
+        db.execSQL("INSERT INTO students (name, student_id) VALUES ('$name', '$id')")
+    }
+
+    fun updateStudent(student: StudentModel, oldID: String) {
+        db.update("students", student.toContentValues(), "student_id = ?", arrayOf(oldID))
+    }
 }

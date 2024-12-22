@@ -33,6 +33,7 @@ class StudentAdapter(
 
   fun removeStudent(position: Int) {
     if (position < 0 || position >= students.size) return
+    Students.deleteStudent(students[position].studentId)
     students.removeAt(position)
     notifyItemRemoved(position)
   }

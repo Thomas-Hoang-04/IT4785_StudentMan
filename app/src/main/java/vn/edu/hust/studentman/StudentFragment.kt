@@ -58,6 +58,7 @@ class StudentFragment : Fragment() {
                     Snackbar.make(it, "Student deleted", Snackbar.LENGTH_LONG)
                         .setAction("Undo") {
                             Students.list.add(pos, student!!)
+                            Students.insertStudent(student.studentName, student.studentId)
                             studentAdapter.notifyItemInserted(pos)
                         }.show()
                 }
