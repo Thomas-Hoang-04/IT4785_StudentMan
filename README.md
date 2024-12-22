@@ -1,6 +1,7 @@
 # IT4785 - Developing Mobile Applications
 
 This repository contains demo for a student management app 
+
 Update: SQLite database support for student data retrieval and manipulation.
 
 ## UI Layout Result:
