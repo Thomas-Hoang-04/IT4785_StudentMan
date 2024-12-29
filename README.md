@@ -1,6 +1,6 @@
 # IT4785 - Developing Mobile Applications
 
-This repository contains demo for a student management app 
+This repository contains demo for a student management app (with Room integration)
 
 ## UI Layout Result:
 ![Layout Demo](result/Startup.jpg)
