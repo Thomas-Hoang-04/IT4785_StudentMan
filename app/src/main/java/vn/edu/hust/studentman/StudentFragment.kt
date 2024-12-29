@@ -5,14 +5,23 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 class StudentFragment : Fragment() {
     private val studentAdapter = Students.adapter
+
+    private lateinit var db: StudentDatabase
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        db = StudentDatabase.getInstance(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,12 +62,18 @@ class StudentFragment : Fragment() {
             val student: StudentModel? = if (pos != RecyclerView.NO_POSITION) Students.list[pos] else null
             if (pos != RecyclerView.NO_POSITION) {
                 studentAdapter.removeStudent(pos)
+                lifecycleScope.launch {
+                    db.dao.deleteStudent(student!!)
+                }
                 dialog.dismiss()
                 this.view?.let {
                     Snackbar.make(it, "Student deleted", Snackbar.LENGTH_LONG)
                         .setAction("Undo") {
                             Students.list.add(pos, student!!)
                             studentAdapter.notifyItemInserted(pos)
+                            lifecycleScope.launch {
+                                db.dao.upsertStudent(student)
+                            }
                         }.show()
                 }
             }

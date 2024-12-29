@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
 
 class UpdateFragment : Fragment() {
     private var name: String = ""
@@ -18,6 +20,8 @@ class UpdateFragment : Fragment() {
 
     private val studentAdapter = Students.adapter
 
+    private lateinit var db: StudentDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -26,6 +30,8 @@ class UpdateFragment : Fragment() {
             state = it.getString("state") ?: state
             pos = it.getInt("position", -1)
         }
+
+        db = StudentDatabase.getInstance(requireContext())
     }
 
     override fun onCreateView(
@@ -55,13 +61,20 @@ class UpdateFragment : Fragment() {
         view.findViewById<Button>(R.id.btn_update).setOnClickListener {
             val newName = view.findViewById<EditText>(R.id.edit_student_name).text.toString()
             val newID = view.findViewById<EditText>(R.id.edit_student_id).text.toString()
+            val target = StudentModel(studentName = newName, studentId = newID)
             if (state == "add") {
-                Students.list.add(StudentModel(newName, newID))
+                Students.list.add(target)
                 studentAdapter.notifyItemInserted(Students.list.size - 1)
+                lifecycleScope.launch {
+                    db.dao.upsertStudent(target)
+                }
             } else if (state == "update") {
                 if (pos != RecyclerView.NO_POSITION) {
-                  Students.list[pos] = StudentModel(newName, newID)
-                  studentAdapter.notifyItemChanged(pos)
+                    Students.list[pos] = target
+                    studentAdapter.notifyItemChanged(pos)
+                    lifecycleScope.launch {
+                        db.dao.upsertStudent(target)
+                    }
                 }
             }
             findNavController().popBackStack()

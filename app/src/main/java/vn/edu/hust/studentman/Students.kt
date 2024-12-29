@@ -1,7 +1,7 @@
 package vn.edu.hust.studentman
 
 object Students {
-    val list: MutableList<StudentModel> = mutableListOf(
+    val refList: List<StudentModel> = listOf(
         StudentModel("Nguyễn Văn An", "SV001"),
         StudentModel("Trần Thị Bảo", "SV002"),
         StudentModel("Lê Hoàng Cường", "SV003"),
@@ -23,6 +23,7 @@ object Students {
         StudentModel("Phạm Thị Tuyết", "SV019"),
         StudentModel("Lê Văn Vũ", "SV020")
     )
+    val list: MutableList<StudentModel> = mutableListOf()
 
     val adapter = StudentAdapter(list)
 }

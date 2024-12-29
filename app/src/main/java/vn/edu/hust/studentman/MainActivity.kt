@@ -6,16 +6,29 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
   private lateinit var root: ConstraintLayout
 
+  private lateinit var db: StudentDatabase
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     root = findViewById(R.id.main)
+    db = StudentDatabase.getInstance(this)
+
+    lifecycleScope.launch {
+      repeatOnLifecycle(Lifecycle.State.STARTED) {
+        processData()
+      }
+    }
   }
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -33,5 +46,21 @@ class MainActivity : AppCompatActivity() {
         super.onOptionsItemSelected(item)
       }
     }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    lifecycleScope.launch {
+      db.dao.deleteAllStudents()
+      db.close()
+    }
+  }
+
+   private suspend fun processData() {
+      Students.refList.forEach {
+        db.dao.upsertStudent(it)
+      }
+     Students.list.clear()
+     Students.list.addAll(db.dao.getAllStudents())
   }
 }

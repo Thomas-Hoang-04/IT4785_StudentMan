@@ -1,16 +1,17 @@
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.ksp)
 }
 
 android {
   namespace = "vn.edu.hust.studentman"
-  compileSdk = 34
+  compileSdk = 35
 
   defaultConfig {
     applicationId = "vn.edu.hust.studentman"
     minSdk = 24
-    targetSdk = 34
+    targetSdk = 35
     versionCode = 1
     versionName = "1.0"
 
@@ -36,7 +37,6 @@ android {
 }
 
 dependencies {
-
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.appcompat)
   implementation(libs.material)
@@ -49,4 +49,7 @@ dependencies {
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
+  implementation(libs.room.ktx)
+  implementation(libs.room.runtime)
+  ksp(libs.room.compiler)
 }
